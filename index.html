@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Cash Plus</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #111827;
+    --bg3: #1a2235;
+    --card: #151d2e;
+    --card2: #1e2a40;
+    --gold: #f5c518;
+    --gold2: #e0a800;
+    --cyan: #00d4ff;
+    --cyan2: #0099bb;
+    --green: #00e676;
+    --red: #ff4444;
+    --purple: #7c3aed;
+    --purple2: #a855f7;
+    --text: #e8eaf0;
+    --text2: #8b96aa;
+    --border: rgba(0,212,255,0.15);
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+    --gold-glow: 0 0 20px rgba(245,197,24,0.4);
+  }
+  .light-mode {
+    --bg: #f0f4ff;
+    --bg2: #ffffff;
+    --bg3: #e8edf8;
+    --card: #ffffff;
+    --card2: #f5f7ff;
+    --text: #1a2235;
+    --text2: #5a6b85;
+    --border: rgba(0,100,200,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ── PAGES ── */
+  .page { display:none; min-height:100vh; }
+  .page.active { display:flex; flex-direction:column; }
+
+  /* ── PARTICLES BG ── */
+  #particles {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events:none; z-index:0; overflow:hidden;
+  }
+  .particle {
+    position:absolute; border-radius:50%;
+    background: radial-gradient(circle, rgba(0,212,255,0.6), transparent);
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0); opacity:0; }
+    10% { opacity:1; }
+    90% { opacity:0.5; }
+    100% { transform: translateY(-10vh) scale(1); opacity:0; }
+  }
+
+  /* ── LOGIN PAGE ── */
+  #loginPage {
+    background: linear-gradient(135deg, #0a0e1a 0%, #0d1b2a 50%, #0a0e1a 100%);
+    align-items: center; justify-content: center; padding: 20px; position:relative;
+  }
+  .login-logo {
+    text-align: center; margin-bottom: 32px; position:relative; z-index:1;
+  }
+  .login-logo .logo-icon {
+    width: 80px; height: 80px; background: linear-gradient(135deg, var(--gold), var(--cyan));
+    border-radius: 24px; margin: 0 auto 16px;
+    display: flex; align-items:center; justify-content:center;
+    font-size: 36px; box-shadow: 0 0 40px rgba(245,197,24,0.5);
+    animation: logoPulse 2s ease-in-out infinite;
+  }
+  @keyframes logoPulse {
+    0%,100% { box-shadow: 0 0 40px rgba(245,197,24,0.5); }
+    50% { box-shadow: 0 0 60px rgba(0,212,255,0.7), 0 0 80px rgba(245,197,24,0.3); }
+  }
+  .login-logo h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 32px; font-weight: 900;
+    background: linear-gradient(90deg, var(--gold), var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 4px;
+  }
+  .login-logo p { color: var(--text2); font-size: 13px; margin-top:4px; letter-spacing:2px; }
+
+  .login-card {
+    background: rgba(21,29,46,0.9); border: 1px solid var(--border);
+    border-radius: 24px; padding: 32px 28px; width: 100%; max-width: 380px;
+    backdrop-filter: blur(20px); position:relative; z-index:1;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+    animation: slideUp 0.6s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity:0; }
+    to { transform: translateY(0); opacity:1; }
+  }
+
+  .form-group { margin-bottom: 16px; }
+  .form-group label { font-size:12px; color:var(--text2); margin-bottom:6px; display:block; text-transform:uppercase; letter-spacing:1px; }
+  .form-group input {
+    width:100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 12px; padding: 13px 16px; color: var(--text);
+    font-size: 14px; font-family: 'Inter', sans-serif;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+  }
+  .form-group input:focus {
+    border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+  }
+  .form-group input::placeholder { color: var(--text2); }
+
+  .btn-primary {
+    width:100%; padding: 14px; background: linear-gradient(135deg, var(--cyan), var(--purple));
+    border: none; border-radius: 12px; color: white; font-size: 15px;
+    font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 1px;
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow: 0 8px 25px rgba(0,212,255,0.4); }
+  .btn-primary:active { transform:translateY(0); }
+
+  .btn-gold {
+    width:100%; padding:14px; background: linear-gradient(135deg, var(--gold), var(--gold2));
+    border:none; border-radius:12px; color:#000; font-size:15px;
+    font-weight:700; cursor:pointer; font-family:'Inter',sans-serif;
+    transition: transform 0.2s, box-shadow 0.2s; margin-top:10px;
+  }
+  .btn-gold:hover { transform:translateY(-2px); box-shadow: var(--gold-glow); }
+
+  .divider { text-align:center; color:var(--text2); font-size:12px; margin:16px 0; position:relative; }
+  .divider::before, .divider::after {
+    content:''; position:absolute; top:50%; width:40%; height:1px;
+    background: var(--border);
+  }
+  .divider::before { left:0; } .divider::after { right:0; }
+
+  /* ── MAIN APP ── */
+  #appPage { background: var(--bg); position:relative; }
+  .app-inner { flex:1; display:flex; flex-direction:column; position:relative; z-index:1; padding-bottom:70px; }
+
+  /* TOP BAR */
+  .top-bar {
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 14px 16px; display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:100;
+    backdrop-filter: blur(20px);
+  }
+  .top-logo {
+    font-family:'Orbitron',sans-serif; font-weight:900; font-size:18px;
+    background: linear-gradient(90deg, var(--gold), var(--cyan));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .top-actions { display:flex; gap:8px; }
+  .top-btn {
+    padding:8px 16px; border-radius:10px; border:none; cursor:pointer;
+    font-weight:600; font-size:13px; transition:all 0.2s;
+  }
+  .top-btn.deposit { background: linear-gradient(135deg,var(--green),#00b050); color:#000; }
+  .top-btn.withdraw { background: linear-gradient(135deg,var(--red),#cc0000); color:#fff; }
+  .top-btn:hover { transform:scale(1.05); }
+
+  /* TAB CONTENT */
+  .tab-content { display:none; flex:1; overflow-y:auto; padding:16px; }
+  .tab-content.active { display:block; }
+
+  /* WALLET CARD */
+  .wallet-card {
+    background: linear-gradient(135deg, #1a2a4a, #0d1b3a);
+    border: 1px solid rgba(0,212,255,0.3); border-radius:20px;
+    padding:24px; margin-bottom:16px; position:relative; overflow:hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .wallet-card::before {
+    content:''; position:absolute; top:-50%; right:-20%;
+    width:200px; height:200px; background: radial-gradient(circle,rgba(0,212,255,0.15),transparent);
+    border-radius:50%;
+  }
+  .wallet-label { font-size:12px; color:var(--cyan); text-transform:uppercase; letter-spacing:2px; margin-bottom:8px; }
+  .wallet-balance {
+    font-family:'Orbitron',sans-serif; font-size:38px; font-weight:900;
+    color: var(--text); line-height:1;
+  }
+  .wallet-balance span { font-size:18px; color:var(--gold); }
+  .wallet-sub { font-size:12px; color:var(--text2); margin-top:8px; }
+
+  /* STATS ROW */
+  .stats-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+  .stat-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:14px; text-align:center;
+  }
+  .stat-card .val { font-size:20px; font-weight:700; font-family:'Orbitron',sans-serif; }
+  .stat-card .lbl { font-size:11px; color:var(--text2); margin-top:4px; }
+  .stat-card.green .val { color:var(--green); }
+  .stat-card.red .val { color:var(--red); }
+
+  /* HISTORY */
+  .section-title {
+    font-size:14px; font-weight:600; color:var(--text2);
+    text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+  .history-list { display:flex; flex-direction:column; gap:8px; }
+  .history-item {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:12px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .history-item .hi-left { display:flex; align-items:center; gap:12px; }
+  .hi-icon { width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px; }
+  .hi-icon.dep { background:rgba(0,230,118,0.15); }
+  .hi-icon.wit { background:rgba(255,68,68,0.15); }
+  .hi-icon.ref { background:rgba(124,58,237,0.15); }
+  .hi-icon.game { background:rgba(245,197,24,0.15); }
+  .hi-title { font-size:13px; font-weight:600; }
+  .hi-date { font-size:11px; color:var(--text2); margin-top:2px; }
+  .hi-amount { font-weight:700; font-size:14px; }
+  .hi-amount.pos { color:var(--green); }
+  .hi-amount.neg { color:var(--red); }
+
+  /* GAME PAGE */
+  .game-area {
+    display:flex; flex-direction:column; align-items:center; padding:24px 16px;
+  }
+  .game-title {
+    font-family:'Orbitron',sans-serif; font-size:22px; font-weight:900;
+    background:linear-gradient(90deg,var(--gold),var(--cyan));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    margin-bottom:8px; text-align:center;
+  }
+  .game-sub { color:var(--text2); font-size:13px; text-align:center; margin-bottom:24px; }
+  .click-progress {
+    width:100%; max-width:300px; background:var(--bg3);
+    border-radius:100px; height:12px; margin-bottom:16px; overflow:hidden;
+  }
+  .click-progress-bar {
+    height:100%; background:linear-gradient(90deg,var(--cyan),var(--gold));
+    border-radius:100px; transition:width 0.1s;
+  }
+  .click-counter {
+    font-family:'Orbitron',sans-serif; font-size:48px; font-weight:900;
+    color:var(--cyan); margin-bottom:4px;
+  }
+  .click-counter-label { color:var(--text2); font-size:13px; margin-bottom:24px; }
+  .game-btn {
+    width:140px; height:140px; border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, #00d4ff, #0066aa);
+    border:none; cursor:pointer; font-size:48px;
+    box-shadow: 0 0 0 4px rgba(0,212,255,0.3), 0 0 40px rgba(0,212,255,0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:20px;
+  }
+  .game-btn:active { transform:scale(0.92); box-shadow:0 0 10px rgba(0,212,255,0.2); }
+  .game-earned {
+    font-family:'Orbitron',sans-serif; font-size:24px; color:var(--gold);
+    font-weight:700;
+  }
+  .game-earned-label { font-size:12px; color:var(--text2); margin-top:4px; text-align:center; }
+  .earn-pop {
+    position:fixed; pointer-events:none; font-family:'Orbitron',sans-serif;
+    font-size:18px; font-weight:700; color:var(--gold);
+    animation: popUp 1s ease forwards; z-index:999;
+  }
+  @keyframes popUp {
+    0% { transform:translateY(0); opacity:1; }
+    100% { transform:translateY(-80px); opacity:0; }
+  }
+
+  /* REFER PAGE */
+  .refer-card {
+    background: linear-gradient(135deg,#1a1a3a,#2a1a4a);
+    border:1px solid rgba(124,58,237,0.4); border-radius:20px;
+    padding:24px; margin-bottom:16px; text-align:center;
+  }
+  .refer-code {
+    font-family:'Orbitron',sans-serif; font-size:28px; font-weight:900;
+    color:var(--gold); letter-spacing:6px; margin:12px 0;
+  }
+  .refer-sub { color:var(--text2); font-size:12px; margin-bottom:16px; }
+  .copy-btn {
+    padding:12px 28px; background:linear-gradient(135deg,var(--purple),var(--purple2));
+    border:none; border-radius:12px; color:white; font-weight:700;
+    cursor:pointer; font-size:14px; transition:all 0.2s;
+  }
+  .copy-btn:hover { transform:scale(1.05); box-shadow:0 0 20px rgba(124,58,237,0.5); }
+  .copy-btn.copied { background:linear-gradient(135deg,var(--green),#00b050); }
+  .refer-stats { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+  .refer-list { display:flex; flex-direction:column; gap:8px; }
+  .refer-item {
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:12px 16px; display:flex; justify-content:space-between; align-items:center;
+  }
+
+  /* GIFT CODE */
+  .gift-card {
+    background: linear-gradient(135deg,#1a2a1a,#1a3a2a);
+    border:1px solid rgba(0,230,118,0.3); border-radius:20px; padding:20px; margin-bottom:16px;
+  }
+  .gift-title { font-size:16px; font-weight:700; color:var(--green); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .gift-input-row { display:flex; gap:8px; }
+  .gift-input-row input {
+    flex:1; background:var(--bg3); border:1px solid var(--border);
+    border-radius:10px; padding:11px 14px; color:var(--text);
+    font-size:14px; font-family:'Inter',sans-serif; outline:none;
+    text-transform:uppercase; letter-spacing:2px;
+  }
+  .gift-input-row input:focus { border-color:var(--green); }
+  .redeem-btn {
+    padding:11px 20px; background:linear-gradient(135deg,var(--green),#00b050);
+    border:none; border-radius:10px; color:#000; font-weight:700;
+    cursor:pointer; font-size:14px; transition:all 0.2s; white-space:nowrap;
+  }
+  .redeem-btn:hover { transform:scale(1.05); }
+
+  /* PROFILE PAGE */
+  .vip-card {
+    background: linear-gradient(135deg,#1a1500,#2a2000);
+    border:1px solid rgba(245,197,24,0.4); border-radius:20px;
+    padding:20px; margin-bottom:16px; position:relative; overflow:hidden;
+  }
+  .vip-card::before {
+    content:''; position:absolute; top:-30px; right:-30px;
+    width:100px; height:100px; background:radial-gradient(circle,rgba(245,197,24,0.2),transparent);
+  }
+  .vip-level-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    background:linear-gradient(135deg,var(--gold),var(--gold2));
+    color:#000; padding:4px 14px; border-radius:100px;
+    font-weight:800; font-size:13px; margin-bottom:12px;
+  }
+  .vip-name { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700; margin-bottom:4px; }
+  .vip-uid { font-size:12px; color:var(--text2); font-family:'Orbitron',sans-serif; letter-spacing:2px; }
+  .vip-progress-wrap { margin-top:14px; }
+  .vip-progress-label { display:flex; justify-content:space-between; font-size:12px; color:var(--text2); margin-bottom:6px; }
+  .vip-progress { background:var(--bg); border-radius:100px; height:8px; overflow:hidden; }
+  .vip-progress-bar { height:100%; background:linear-gradient(90deg,var(--gold),var(--gold2)); border-radius:100px; transition:width 0.5s; }
+  .vip-bonus { font-size:13px; color:var(--gold); margin-top:8px; font-weight:600; }
+
+  .vip-levels { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+  .vip-lvl-item {
+    background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:10px 14px; display:flex; align-items:center; justify-content:space-between;
+    transition: border-color 0.3s;
+  }
+  .vip-lvl-item.current { border-color:var(--gold); background:rgba(245,197,24,0.05); }
+  .vip-lvl-item.unlocked { border-color:rgba(0,230,118,0.3); }
+  .vip-lvl-left { display:flex; align-items:center; gap:10px; }
+  .vip-lvl-num { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; }
+  .vip-lvl-dep { font-size:12px; color:var(--text2); }
+  .vip-lvl-bonus { font-size:13px; font-weight:700; color:var(--gold); }
+  .vip-lvl-status { font-size:11px; padding:3px 8px; border-radius:6px; }
+  .vip-lvl-status.active { background:rgba(0,230,118,0.15); color:var(--green); }
+  .vip-lvl-status.locked { background:rgba(255,255,255,0.05); color:var(--text2); }
+
+  .profile-menu { display:flex; flex-direction:column; gap:8px; }
+  .profile-menu-item {
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; transition:background 0.2s;
+  }
+  .profile-menu-item:hover { background:var(--card2); }
+  .pmi-left { display:flex; align-items:center; gap:12px; }
+  .pmi-icon { font-size:20px; }
+  .pmi-title { font-size:14px; font-weight:500; }
+  .pmi-arrow { color:var(--text2); }
+  .toggle-switch {
+    width:44px; height:24px; background:var(--bg3); border-radius:100px;
+    position:relative; cursor:pointer; transition:background 0.3s;
+  }
+  .toggle-switch.on { background:var(--cyan); }
+  .toggle-knob {
+    position:absolute; top:3px; left:3px; width:18px; height:18px;
+    background:#fff; border-radius:50%; transition:left 0.3s; box-shadow:0 1px 4px rgba(0,0,0,0.3);
+  }
+  .toggle-switch.on .toggle-knob { left:23px; }
+
+  .logout-btn {
+    width:100%; padding:14px; background:rgba(255,68,68,0.1);
+    border:1px solid rgba(255,68,68,0.3); border-radius:12px;
+    color:var(--red); font-size:15px; font-weight:700;
+    cursor:pointer; transition:all 0.2s; margin-top:8px;
+  }
+  .logout-btn:hover { background:rgba(255,68,68,0.2); }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position:fixed; bottom:0; left:0; right:0;
+    background:var(--card); border-top:1px solid var(--border);
+    display:flex; z-index:100; backdrop-filter:blur(20px);
+  }
+  .nav-btn {
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    padding:10px 4px; cursor:pointer; transition:all 0.2s;
+    border:none; background:transparent; color:var(--text2);
+    font-family:'Inter',sans-serif;
+  }
+  .nav-btn.active { color:var(--cyan); }
+  .nav-btn .nav-icon { font-size:22px; margin-bottom:3px; transition:transform 0.2s; }
+  .nav-btn.active .nav-icon { transform:scale(1.2); }
+  .nav-btn .nav-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+
+  /* MODALS */
+  .modal-overlay {
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7);
+    z-index:200; align-items:flex-end; justify-content:center;
+    backdrop-filter:blur(4px);
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--card); border-radius:24px 24px 0 0;
+    padding:24px; width:100%; max-width:480px;
+    animation: modalUp 0.3s ease;
+    border-top:1px solid var(--border);
+    max-height:90vh; overflow-y:auto;
+  }
+  @keyframes modalUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  .modal-handle { width:40px; height:4px; background:var(--border); border-radius:100px; margin:0 auto 20px; }
+  .modal-title { font-family:'Orbitron',sans-serif; font-size:18px; font-weight:700; margin-bottom:20px; text-align:center; }
+
+  .wallet-addr {
+    background:var(--bg3); border:1px solid var(--border); border-radius:10px;
+    padding:12px; font-size:11px; color:var(--text2); word-break:break-all;
+    font-family:'Orbitron',sans-serif; letter-spacing:1px; margin-bottom:8px;
+  }
+  .copy-addr-btn {
+    width:100%; padding:10px; background:transparent; border:1px solid var(--border);
+    border-radius:10px; color:var(--cyan); cursor:pointer; font-size:13px; margin-bottom:16px;
+    transition:all 0.2s;
+  }
+  .copy-addr-btn:hover { background:rgba(0,212,255,0.05); }
+  .upload-area {
+    border:2px dashed var(--border); border-radius:12px; padding:24px;
+    text-align:center; cursor:pointer; transition:all 0.2s; margin-bottom:16px;
+    position:relative;
+  }
+  .upload-area:hover { border-color:var(--cyan); background:rgba(0,212,255,0.03); }
+  .upload-area input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .upload-icon { font-size:32px; margin-bottom:8px; }
+  .upload-text { font-size:13px; color:var(--text2); }
+  .upload-preview { max-width:100%; border-radius:10px; margin-top:8px; display:none; }
+
+  .info-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .info-row:last-child { border:none; }
+  .info-row span:first-child { color:var(--text2); }
+  .info-row span:last-child { font-weight:600; }
+
+  /* TOAST */
+  .toast {
+    position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-80px);
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:12px 24px; font-size:14px; font-weight:600; z-index:999;
+    transition:transform 0.3s; box-shadow:0 8px 24px rgba(0,0,0,0.3);
+    white-space:nowrap;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  .toast.success { border-color:var(--green); color:var(--green); }
+  .toast.error { border-color:var(--red); color:var(--red); }
+  .toast.info { border-color:var(--cyan); color:var(--cyan); }
+
+  /* REGISTER */
+  #registerPage {
+    background: linear-gradient(135deg,#0a0e1a,#0d1b2a,#0a0e1a);
+    align-items:center; justify-content:center; padding:20px; position:relative;
+  }
+  .back-btn {
+    position:absolute; top:20px; left:20px; background:transparent; border:none;
+    color:var(--text2); font-size:24px; cursor:pointer; z-index:1;
+  }
+
+  /* SPLASH */
+  #splashPage {
+    background:#0a0e1a; align-items:center; justify-content:center; position:relative;
+  }
+  .splash-logo {
+    font-family:'Orbitron',sans-serif; font-size:48px; font-weight:900;
+    background:linear-gradient(90deg,var(--gold),var(--cyan));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    text-align:center; animation:splashPop 0.5s ease;
+  }
+  .splash-tagline { color:var(--text2); text-align:center; margin-top:8px; letter-spacing:3px; font-size:12px; }
+  @keyframes splashPop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+  .splash-loader {
+    width:60px; height:4px; background:var(--bg3); border-radius:100px;
+    margin:32px auto 0; overflow:hidden;
+  }
+  .splash-loader-bar {
+    height:100%; background:linear-gradient(90deg,var(--gold),var(--cyan));
+    border-radius:100px; animation:loadBar 2s ease forwards;
+  }
+  @keyframes loadBar { from{width:0} to{width:100%} }
+
+  .session-warning {
+    background:rgba(255,165,0,0.1); border:1px solid rgba(255,165,0,0.3);
+    border-radius:10px; padding:10px 14px; font-size:12px; color:orange;
+    text-align:center; margin-bottom:12px;
+  }
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SPLASH -->
+<div class="page active" id="splashPage">
+  <div style="position:relative;z-index:1;text-align:center;">
+    <div style="font-size:64px;margin-bottom:16px;">💰</div>
+    <div class="splash-logo">CASH PLUS</div>
+    <div class="splash-tagline">SMART WALLET SYSTEM</div>
+    <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+  </div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div class="page" id="loginPage">
+  <div style="position:relative;z-index:1;width:100%;max-width:380px;">
+    <div class="login-logo">
+      <div class="logo-icon">💰</div>
+      <h1>CASH PLUS</h1>
+      <p>SMART WALLET SYSTEM</p>
+    </div>
+    <div class="login-card">
+      <div class="session-warning" id="sessionWarn" style="display:none">⏱ Session expired. Please login again.</div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="Enter username">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="Enter email">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Enter password">
+      </div>
+      <button class="btn-primary" onclick="doLogin()">🔐 LOGIN</button>
+      <div class="divider">OR</div>
+      <button class="btn-gold" onclick="showPage('registerPage')">✨ CREATE ACCOUNT</button>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER PAGE -->
+<div class="page" id="registerPage">
+  <button class="back-btn" onclick="showPage('loginPage')">←</button>
+  <div style="position:relative;z-index:1;width:100%;max-width:380px;">
+    <div class="login-logo">
+      <div class="logo-icon" style="background:linear-gradient(135deg,var(--gold),var(--gold2));">✨</div>
+      <h1>REGISTER</h1>
+      <p>CREATE YOUR ACCOUNT</p>
+    </div>
+    <div class="login-card">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="regUser" placeholder="Choose a username">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="Enter your email">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPass" placeholder="Create password">
+      </div>
+      <div class="form-group">
+        <label>Referral ID (optional)</label>
+        <input type="text" id="regRefer" placeholder="8-digit referral code" maxlength="8">
+      </div>
+      <button class="btn-primary" onclick="doRegister()">🚀 CREATE ACCOUNT</button>
+      <div class="divider">Already have an account?</div>
+      <button class="btn-gold" onclick="showPage('loginPage')">🔐 LOGIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP PAGE -->
+<div class="page" id="appPage">
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-logo">💰 CASH+</div>
+    <div class="top-actions">
+      <button class="top-btn withdraw" onclick="openModal('withdrawModal')">↑ Withdraw</button>
+      <button class="top-btn deposit" onclick="openModal('depositModal')">↓ Deposit</button>
+    </div>
+  </div>
+
+  <div class="app-inner">
+    <!-- HOME TAB -->
+    <div class="tab-content active" id="tab-home">
+      <div class="wallet-card">
+        <div class="wallet-label">💳 Total Balance</div>
+        <div class="wallet-balance"><span>$</span><span id="balanceAmt">0.00</span></div>
+        <div class="wallet-sub">USDT · BNB Smart Chain</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card green">
+          <div class="val" id="totalDeposited">$0.00</div>
+          <div class="lbl">Total Deposited</div>
+        </div>
+        <div class="stat-card red">
+          <div class="val" id="totalWithdrawn">$0.00</div>
+          <div class="lbl">Total Withdrawn</div>
+        </div>
+      </div>
+      <div class="section-title">Recent Transactions</div>
+      <div class="history-list" id="homeHistory">
+        <div style="text-align:center;color:var(--text2);padding:24px;font-size:13px;">No transactions yet</div>
+      </div>
+    </div>
+
+    <!-- GAME TAB -->
+    <div class="tab-content" id="tab-game">
+      <div class="game-area">
+        <div class="game-title">🎮 CLICK GAME</div>
+        <div class="game-sub">Click 500 times to earn $0.10 USDT</div>
+        <div class="click-counter" id="clickCount">0</div>
+        <div class="click-counter-label">/ 500 clicks</div>
+        <div class="click-progress">
+          <div class="click-progress-bar" id="clickBar" style="width:0%"></div>
+        </div>
+        <button class="game-btn" onclick="handleGameClick(event)">👆</button>
+        <div class="game-earned" id="gameEarned">$0.00</div>
+        <div class="game-earned-label">Total Game Earnings</div>
+        <div style="margin-top:16px;font-size:12px;color:var(--text2);text-align:center;">
+          Each 500 clicks = $0.10 USDT credited to wallet
+        </div>
+      </div>
+    </div>
+
+    <!-- REFER TAB -->
+    <div class="tab-content" id="tab-refer">
+      <div class="refer-card">
+        <div style="font-size:13px;color:var(--text2);">Your Referral Code</div>
+        <div class="refer-code" id="myReferCode">--------</div>
+        <div class="refer-sub">Share your code · Earn rewards on every deposit</div>
+        <button class="copy-btn" id="copyReferBtn" onclick="copyReferCode()">📋 Copy Code</button>
+      </div>
+      <div class="stats-row refer-stats">
+        <div class="stat-card">
+          <div class="val" id="referCount" style="color:var(--purple2);">0</div>
+          <div class="lbl">Total Referrals</div>
+        </div>
+        <div class="stat-card green">
+          <div class="val" id="referEarned">$0.00</div>
+          <div class="lbl">Refer Earnings</div>
+        </div>
+      </div>
+      <div class="section-title">Referral History</div>
+      <div id="referList">
+        <div style="text-align:center;color:var(--text2);padding:24px;font-size:13px;">No referrals yet</div>
+      </div>
+
+      <!-- GIFT CODE -->
+      <div class="section-title" style="margin-top:16px;">Gift Code</div>
+      <div class="gift-card">
+        <div class="gift-title">🎁 Redeem Gift Code</div>
+        <div class="gift-input-row">
+          <input type="text" id="giftCodeInput" placeholder="ENTER CODE" maxlength="12">
+          <button class="redeem-btn" onclick="redeemGiftCode()">Redeem</button>
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-top:8px;">Enter the gift code provided by admin to claim your bonus</div>
+      </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="tab-content" id="tab-profile">
+      <!-- VIP CARD -->
+      <div class="vip-card">
+        <div class="vip-level-badge" id="vipBadge">⭐ VIP 0</div>
+        <div class="vip-name" id="profileName">--</div>
+        <div class="vip-uid">UID: <span id="profileUID">--------</span></div>
+        <div class="vip-progress-wrap">
+          <div class="vip-progress-label">
+            <span>Progress to next VIP</span>
+            <span id="vipNextAmt">Deposit $100</span>
+          </div>
+          <div class="vip-progress">
+            <div class="vip-progress-bar" id="vipProgressBar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="vip-bonus" id="vipBonusText">Deposit $100 to unlock VIP 1 (+$4 bonus)</div>
+      </div>
+
+      <!-- VIP TABLE -->
+      <div class="section-title">VIP Levels</div>
+      <div class="vip-levels" id="vipLevels"></div>
+
+      <!-- PROFILE MENU -->
+      <div class="section-title" style="margin-top:16px;">Settings</div>
+      <div class="profile-menu">
+        <div class="profile-menu-item">
+          <div class="pmi-left">
+            <span class="pmi-icon">🌙</span>
+            <span class="pmi-title">Dark Mode</span>
+          </div>
+          <div class="toggle-switch on" id="darkToggle" onclick="toggleDark()">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <div class="profile-menu-item" onclick="showProfileHistory()">
+          <div class="pmi-left">
+            <span class="pmi-icon">📜</span>
+            <span class="pmi-title">Transaction History</span>
+          </div>
+          <span class="pmi-arrow">›</span>
+        </div>
+        <div class="profile-menu-item">
+          <div class="pmi-left">
+            <span class="pmi-icon">🔔</span>
+            <span class="pmi-title">Notifications</span>
+          </div>
+          <span class="pmi-arrow">›</span>
+        </div>
+        <div class="profile-menu-item">
+          <div class="pmi-left">
+            <span class="pmi-icon">🛡️</span>
+            <span class="pmi-title">Security</span>
+          </div>
+          <span class="pmi-arrow">›</span>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('home',this)">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+    </button>
+    <button class="nav-btn" onclick="switchTab('game',this)">
+      <div class="nav-icon">🎮</div>
+      <div class="nav-label">Game</div>
+    </button>
+    <button class="nav-btn" onclick="switchTab('refer',this)">
+      <div class="nav-icon">🔗</div>
+      <div class="nav-label">Refer</div>
+    </button>
+    <button class="nav-btn" onclick="switchTab('profile',this)">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">Profile</div>
+    </button>
+  </div>
+</div>
+
+<!-- DEPOSIT MODAL -->
+<div class="modal-overlay" id="depositModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💰 Deposit USDT</div>
+    <div class="info-row">
+      <span>Network</span><span>BNB Smart Chain (BEP-20)</span>
+    </div>
+    <div class="info-row">
+      <span>Token</span><span>USDT</span>
+    </div>
+    <div class="info-row">
+      <span>Min Deposit</span><span style="color:var(--green)">$10</span>
+    </div>
+    <div class="info-row" style="margin-bottom:14px;">
+      <span>Max Deposit</span><span style="color:var(--gold)">$5,000</span>
+    </div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Send USDT to this address:</div>
+    <div class="wallet-addr">0xac6b5b0695a6d509b9285e8f016488d3c486a29a</div>
+    <button class="copy-addr-btn" onclick="copyAddr()">📋 Copy Address</button>
+    <div class="form-group">
+      <label>Amount (USD)</label>
+      <input type="number" id="depositAmt" placeholder="Min $10 – Max $5000" min="10" max="5000">
+    </div>
+    <div class="upload-area" id="uploadArea">
+      <input type="file" accept="image/*" onchange="handleUpload(event)">
+      <div class="upload-icon">📸</div>
+      <div class="upload-text">Upload payment screenshot<br><small>Required for verification</small></div>
+      <img id="uploadPreview" class="upload-preview">
+    </div>
+    <button class="btn-primary" onclick="submitDeposit()">📤 Submit Deposit Request</button>
+    <button onclick="closeModal('depositModal')" style="width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text2);cursor:pointer;margin-top:8px;">Cancel</button>
+  </div>
+</div>
+
+<!-- WITHDRAW MODAL -->
+<div class="modal-overlay" id="withdrawModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💸 Withdraw USDT</div>
+    <div class="info-row">
+      <span>Network</span><span>BNB Smart Chain (BEP-20)</span>
+    </div>
+    <div class="info-row">
+      <span>Min Withdraw</span><span style="color:var(--green)">$200</span>
+    </div>
+    <div class="info-row" style="margin-bottom:14px;">
+      <span>Max Withdraw</span><span style="color:var(--gold)">$10,000</span>
+    </div>
+    <div class="form-group">
+      <label>Your BNB Wallet Address</label>
+      <input type="text" id="withdrawAddr" placeholder="0x...">
+    </div>
+    <div class="form-group">
+      <label>Amount (USD)</label>
+      <input type="number" id="withdrawAmt" placeholder="Min $200 – Max $10000" min="200" max="10000">
+    </div>
+    <div style="background:rgba(255,165,0,0.1);border:1px solid rgba(255,165,0,0.2);border-radius:10px;padding:10px;font-size:12px;color:orange;margin-bottom:14px;">
+      ⚠️ Withdrawal requests are processed by admin within 24 hours
+    </div>
+    <button class="btn-primary" style="background:linear-gradient(135deg,var(--red),#cc0000);" onclick="submitWithdraw()">📤 Submit Withdraw Request</button>
+    <button onclick="closeModal('withdrawModal')" style="width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text2);cursor:pointer;margin-top:8px;">Cancel</button>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal-overlay" id="historyModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📜 Transaction History</div>
+    <div class="history-list" id="fullHistory" style="max-height:60vh;overflow-y:auto;"></div>
+    <button onclick="closeModal('historyModal')" style="width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text2);cursor:pointer;margin-top:16px;">Close</button>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let state = {
+  user: null,
+  accounts: JSON.parse(localStorage.getItem('cp_accounts') || '[]'),
+  giftCodes: { 'GIFT2024': 5, 'BONUS10': 10, 'WELCOME5': 5, 'CP100': 100 }
+};
+
+// ── PARTICLES ──
+function makeParticles() {
+  const c = document.getElementById('particles');
+  for (let i=0; i<20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const s = Math.random()*6+2;
+    p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${Math.random()*8+4}s;animation-delay:${Math.random()*6}s;`;
+    c.appendChild(p);
+  }
+}
+makeParticles();
+
+// ── PAGE NAV ──
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── SPLASH ──
+setTimeout(()=>{ showPage('loginPage'); }, 2200);
+
+// ── AUTH ──
+function genUID() {
+  return Math.floor(10000000 + Math.random()*90000000).toString();
+}
+
+function doRegister() {
+  const u = document.getElementById('regUser').value.trim();
+  const e = document.getElementById('regEmail').value.trim();
+  const p = document.getElementById('regPass').value.trim();
+  const r = document.getElementById('regRefer').value.trim();
+  if (!u||!e||!p) { showToast('Fill all required fields','error'); return; }
+  if (state.accounts.find(a=>a.email===e)) { showToast('Email already registered','error'); return; }
+  const uid = genUID();
+  const acc = {
+    username: u, email: e, password: p,
+    uid, referCode: uid,
+    balance: 0, deposited: 0, withdrawn: 0,
+    gameClicks: 0, gameEarned: 0,
+    referredBy: r||null, referrals: [],
+    transactions: [], vipLevel: 0
+  };
+  // bonus for referrer
+  if (r) {
+    const ref = state.accounts.find(a=>a.referCode===r||a.uid===r);
+    if (ref) {
+      ref.referrals.push({uid, date:new Date().toISOString()});
+      ref.balance += 0.50;
+      ref.gameEarned += 0.50;
+      ref.transactions.unshift({type:'refer',amount:0.50,desc:`Referral bonus - ${u}`,date:new Date().toISOString()});
+    }
+  }
+  state.accounts.push(acc);
+  saveAccounts();
+  showToast('Account created! Please login','success');
+  setTimeout(()=>showPage('loginPage'),1000);
+}
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const e = document.getElementById('loginEmail').value.trim();
+  const p = document.getElementById('loginPass').value.trim();
+  if (!u||!e||!p) { showToast('Fill all fields','error'); return; }
+  // demo admin bypass
+  let acc = state.accounts.find(a=>a.email===e && a.password===p && a.username===u);
+  if (!acc) {
+    // auto create for demo
+    if (e==='demo@cashplus.com' && p==='demo123' && u==='Demo') {
+      const uid=genUID();
+      acc={username:'Demo',email:e,password:p,uid,referCode:uid,
+        balance:250.00,deposited:500,withdrawn:250,
+        gameClicks:1000,gameEarned:2.00,referredBy:null,referrals:[],vipLevel:3,
+        transactions:[
+          {type:'dep',amount:500,desc:'Deposit USDT',date:'2024-07-01T10:00:00Z'},
+          {type:'wit',amount:250,desc:'Withdrawal USDT',date:'2024-07-05T14:00:00Z'},
+          {type:'game',amount:2.00,desc:'Game earnings',date:'2024-07-08T09:00:00Z'},
+        ]
+      };
+      state.accounts.push(acc);
+      saveAccounts();
+    } else {
+      showToast('Invalid credentials','error');
+      return;
+    }
+  }
+  if (acc.blocked) { showToast('⚠️ Account suspended. Contact support.','error'); return; }
+  state.user = acc;
+  localStorage.setItem('cp_session', JSON.stringify({uid:acc.uid, ts:Date.now()}));
+  loadApp(); loadWalletUI(); loadUserNotifs();
+  showPage('appPage');
+  showToast(`Welcome back, ${acc.username}!`,'success');
+}
+
+function doLogout(fromSession=false) {
+  state.user=null;
+  localStorage.removeItem('cp_session');
+  document.getElementById('sessionWarn').style.display = fromSession ? 'block' : 'none';
+  showPage('loginPage');
+  if (fromSession) showToast('Session expired. Please login again.','info');
+}
+
+// 1-hour session + blocked check
+setInterval(()=>{
+  const s = localStorage.getItem('cp_session');
+  if (s) {
+    const sess = JSON.parse(s);
+    if (Date.now() - sess.ts > 1*60*60*1000) { doLogout(true); return; }
+    // Check if blocked by admin
+    const acc=state.accounts.find(a=>a.uid===sess.uid);
+    if (acc && acc.blocked) {
+      state.user=null; localStorage.removeItem('cp_session');
+      showPage('loginPage');
+      showToast('⚠️ Your account has been suspended.','error');
+    }
+  }
+}, 15000);
+
+// ── LOAD APP ──
+const VIP_LEVELS = [
+  {dep:100,bonus:4},{dep:250,bonus:8},{dep:350,bonus:12},
+  {dep:550,bonus:16},{dep:750,bonus:34},{dep:999,bonus:66},
+  {dep:1500,bonus:79},{dep:4500,bonus:150},{dep:8000,bonus:250},{dep:10000,bonus:500}
+];
+
+function getVipLevel(deposited) {
+  let lvl=0;
+  for (let i=0;i<VIP_LEVELS.length;i++) {
+    if (deposited >= VIP_LEVELS[i].dep) lvl=i+1; else break;
+  }
+  return lvl;
+}
+
+function loadApp() {
+  const u = state.user;
+  u.vipLevel = getVipLevel(u.deposited);
+  document.getElementById('balanceAmt').textContent = u.balance.toFixed(2);
+  document.getElementById('totalDeposited').textContent = '$'+u.deposited.toFixed(2);
+  document.getElementById('totalWithdrawn').textContent = '$'+u.withdrawn.toFixed(2);
+  document.getElementById('myReferCode').textContent = u.referCode;
+  document.getElementById('referCount').textContent = u.referrals.length;
+  document.getElementById('referEarned').textContent = '$'+(u.referrals.length*0.5).toFixed(2);
+  document.getElementById('profileName').textContent = u.username;
+  document.getElementById('profileUID').textContent = u.uid;
+  document.getElementById('clickCount').textContent = u.gameClicks % 500;
+  document.getElementById('clickBar').style.width = ((u.gameClicks%500)/500*100)+'%';
+  document.getElementById('gameEarned').textContent = '$'+u.gameEarned.toFixed(2);
+  updateVipUI();
+  renderHistory();
+  renderVipLevels();
+  renderReferList();
+}
+
+function updateVipUI() {
+  const u=state.user;
+  const lvl=u.vipLevel;
+  document.getElementById('vipBadge').textContent = `⭐ VIP ${lvl}`;
+  const nextIdx = lvl; // 0-based index of next level
+  if (nextIdx < VIP_LEVELS.length) {
+    const next = VIP_LEVELS[nextIdx];
+    const prev = lvl>0 ? VIP_LEVELS[lvl-1].dep : 0;
+    const pct = Math.min(100,((u.deposited-prev)/(next.dep-prev)*100));
+    document.getElementById('vipProgressBar').style.width = pct+'%';
+    document.getElementById('vipNextAmt').textContent = `Deposit $${next.dep}`;
+    document.getElementById('vipBonusText').textContent = `Deposit $${next.dep} to unlock VIP ${lvl+1} (+$${next.bonus} bonus)`;
+  } else {
+    document.getElementById('vipProgressBar').style.width='100%';
+    document.getElementById('vipNextAmt').textContent='MAX LEVEL';
+    document.getElementById('vipBonusText').textContent='🏆 You have reached the maximum VIP level!';
+  }
+}
+
+function renderVipLevels() {
+  const u=state.user;
+  const c=document.getElementById('vipLevels');
+  c.innerHTML='';
+  VIP_LEVELS.forEach((v,i)=>{
+    const lvlNum=i+1;
+    const unlocked=u.deposited>=v.dep;
+    const current=u.vipLevel===lvlNum;
+    c.innerHTML+=`<div class="vip-lvl-item ${current?'current':unlocked?'unlocked':''}">
+      <div class="vip-lvl-left">
+        <div class="vip-lvl-num">${unlocked?'✅':'🔒'} VIP ${lvlNum}</div>
+        <div class="vip-lvl-dep">Deposit $${v.dep}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="vip-lvl-bonus">+$${v.bonus}</div>
+        <div class="vip-lvl-status ${unlocked?'active':'locked'}">${current?'Current':unlocked?'Unlocked':'Locked'}</div>
+      </div>
+    </div>`;
+  });
+}
+
+function renderHistory() {
+  const txns = (state.user.transactions||[]).slice(0,5);
+  const c=document.getElementById('homeHistory');
+  if (!txns.length) { c.innerHTML='<div style="text-align:center;color:var(--text2);padding:24px;font-size:13px">No transactions yet</div>'; return; }
+  c.innerHTML=txns.map(t=>historyItemHTML(t)).join('');
+}
+
+function historyItemHTML(t) {
+  const icons={dep:'💰',wit:'💸',refer:'🔗',game:'🎮',gift:'🎁'};
+  const cls={dep:'dep',wit:'wit',refer:'ref',game:'game',gift:'dep'};
+  const pos = t.type!=='wit';
+  return `<div class="history-item">
+    <div class="hi-left">
+      <div class="hi-icon ${cls[t.type]||'dep'}">${icons[t.type]||'💰'}</div>
+      <div><div class="hi-title">${t.desc}</div><div class="hi-date">${new Date(t.date).toLocaleDateString()}</div></div>
+    </div>
+    <div class="hi-amount ${pos?'pos':'neg'}">${pos?'+':'-'}$${Math.abs(t.amount).toFixed(2)}</div>
+  </div>`;
+}
+
+function renderReferList() {
+  const refs=state.user.referrals||[];
+  const c=document.getElementById('referList');
+  if (!refs.length) { c.innerHTML='<div style="text-align:center;color:var(--text2);padding:24px;font-size:13px">No referrals yet</div>'; return; }
+  c.innerHTML=refs.map((r,i)=>`<div class="refer-item">
+    <div><div style="font-weight:600;font-size:13px">User #${r.uid||i+1}</div><div style="font-size:11px;color:var(--text2)">${new Date(r.date).toLocaleDateString()}</div></div>
+    <div style="color:var(--green);font-weight:700">+$0.50</div>
+  </div>`).join('');
+}
+
+// ── TABS ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── GAME ──
+function handleGameClick(e) {
+  const u=state.user;
+  u.gameClicks++;
+  const inRound = u.gameClicks % 500;
+  document.getElementById('clickCount').textContent = inRound===0?500:inRound;
+  document.getElementById('clickBar').style.width=((inRound===0?500:inRound)/500*100)+'%';
+  if (inRound===0) {
+    u.balance+=0.10; u.gameEarned+=0.10;
+    u.transactions.unshift({type:'game',amount:0.10,desc:'Game reward (500 clicks)',date:new Date().toISOString()});
+    document.getElementById('balanceAmt').textContent=u.balance.toFixed(2);
+    document.getElementById('gameEarned').textContent='$'+u.gameEarned.toFixed(2);
+    saveAccounts();
+    showToast('🎉 +$0.10 earned!','success');
+  }
+  // pop
+  const pop=document.createElement('div');
+  pop.className='earn-pop';
+  pop.textContent=inRound===0?'+$0.10':'👆';
+  pop.style.cssText=`left:${e.clientX-20}px;top:${e.clientY-20}px;font-size:${inRound===0?'22px':'14px'};color:${inRound===0?'var(--gold)':'var(--text2)'};`;
+  document.body.appendChild(pop);
+  setTimeout(()=>pop.remove(),1000);
+  saveAccounts();
+}
+
+// ── DEPOSIT ──
+let uploadedImg = null;
+function handleUpload(e) {
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=document.getElementById('uploadPreview');
+    img.src=ev.target.result; img.style.display='block'; uploadedImg=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function getWalletCfg() {
+  return JSON.parse(localStorage.getItem('cp_wallet_cfg')||'{"addr":"0xac6b5b0695a6d509b9285e8f016488d3c486a29a","net":"BEP-20 (BSC)","qr":""}');
+}
+function copyAddr() {
+  const w=getWalletCfg();
+  navigator.clipboard.writeText(w.addr);
+  showToast('Address copied!','success');
+}
+function loadWalletUI() {
+  const w=getWalletCfg();
+  // Update all wallet address displays in deposit modal
+  const addrEls=document.querySelectorAll('.wallet-addr-display');
+  addrEls.forEach(el=>el.textContent=w.addr);
+  const netEls=document.querySelectorAll('.wallet-net-display');
+  netEls.forEach(el=>el.textContent=w.net||'BEP-20 (BSC)');
+  const qrEls=document.querySelectorAll('.wallet-qr-display');
+  qrEls.forEach(el=>{if(w.qr){el.src=w.qr;el.style.display='block';}else{el.style.display='none';}});
+}
+function submitDeposit() {
+  const amt=parseFloat(document.getElementById('depositAmt').value);
+  // Read min/max from admin rules
+  const rules=JSON.parse(localStorage.getItem('cp_rules')||'{"depMin":10,"depMax":5000}');
+  if (!amt||amt<rules.depMin||amt>rules.depMax) { showToast(`Amount must be $${rules.depMin} – $${rules.depMax}`,'error'); return; }
+  if (!uploadedImg) { showToast('Please upload payment screenshot','error'); return; }
+  const u=state.user;
+  const reqId='DEP-'+Date.now();
+  // Save request for admin panel
+  const reqs=JSON.parse(localStorage.getItem('cp_dep_requests')||'[]');
+  reqs.unshift({
+    id:reqId, uid:u.uid, username:u.username, amount:amt,
+    screenshot:uploadedImg, status:'pending', date:new Date().toISOString()
+  });
+  localStorage.setItem('cp_dep_requests',JSON.stringify(reqs));
+  // Add pending transaction to user
+  u.transactions=u.transactions||[];
+  u.transactions.unshift({type:'dep',amount:amt,desc:'USDT Deposit (BEP-20) — Pending',date:new Date().toISOString(),status:'pending',reqId});
+  saveAccounts();
+  showToast('⏳ Deposit request submitted! Awaiting admin approval.','info');
+  closeModal('depositModal');
+  document.getElementById('depositAmt').value='';
+  document.getElementById('uploadPreview').style.display='none';
+  uploadedImg=null;
+}
+
+// ── WITHDRAW ──
+function submitWithdraw() {
+  const addr=document.getElementById('withdrawAddr').value.trim();
+  const amt=parseFloat(document.getElementById('withdrawAmt').value);
+  const u=state.user;
+  const rules=JSON.parse(localStorage.getItem('cp_rules')||'{"wdMin":200,"wdMax":10000}');
+  if (!addr) { showToast('Enter your wallet address','error'); return; }
+  if (!amt||amt<rules.wdMin||amt>rules.wdMax) { showToast(`Amount must be $${rules.wdMin} – $${rules.wdMax}`,'error'); return; }
+  if (amt>u.balance) { showToast('Insufficient balance','error'); return; }
+  // Deduct balance immediately (will refund if admin cancels)
+  u.balance-=amt; u.withdrawn+=amt;
+  const reqId='WD-'+Date.now();
+  const wreqs=JSON.parse(localStorage.getItem('cp_wd_requests')||'[]');
+  wreqs.unshift({
+    id:reqId, uid:u.uid, username:u.username, amount:amt,
+    wallet:addr, status:'pending', date:new Date().toISOString()
+  });
+  localStorage.setItem('cp_wd_requests',JSON.stringify(wreqs));
+  u.transactions=u.transactions||[];
+  u.transactions.unshift({type:'wit',amount:amt,desc:'USDT Withdrawal (BEP-20) — Pending',date:new Date().toISOString(),status:'pending',reqId});
+  saveAccounts(); loadApp();
+  closeModal('withdrawModal');
+  showToast('⏳ Withdrawal request submitted! Awaiting admin approval.','success');
+  document.getElementById('withdrawAddr').value='';
+  document.getElementById('withdrawAmt').value='';
+}
+
+// ── REFER ──
+function copyReferCode() {
+  navigator.clipboard.writeText(state.user.referCode);
+  const btn=document.getElementById('copyReferBtn');
+  btn.textContent='✅ Copied!'; btn.classList.add('copied');
+  setTimeout(()=>{ btn.textContent='📋 Copy Code'; btn.classList.remove('copied'); },2000);
+  showToast('Referral code copied!','success');
+}
+
+// ── GIFT CODE ──
+function redeemGiftCode() {
+  const code=document.getElementById('giftCodeInput').value.trim().toUpperCase();
+  if (!code) { showToast('Enter a gift code','error'); return; }
+  const amt=state.giftCodes[code];
+  if (!amt) { showToast('Invalid or expired code','error'); return; }
+  delete state.giftCodes[code]; // one-time use
+  const u=state.user;
+  u.balance+=amt;
+  u.transactions.unshift({type:'gift',amount:amt,desc:`Gift Code: ${code}`,date:new Date().toISOString()});
+  saveAccounts(); loadApp();
+  document.getElementById('giftCodeInput').value='';
+  showToast(`🎁 Gift code redeemed! +$${amt}!`,'success');
+}
+
+// ── DARK MODE ──
+let darkMode=true;
+function toggleDark() {
+  darkMode=!darkMode;
+  document.body.classList.toggle('light-mode',!darkMode);
+  document.getElementById('darkToggle').classList.toggle('on',darkMode);
+}
+
+// ── PROFILE HISTORY ──
+function showProfileHistory() {
+  const c=document.getElementById('fullHistory');
+  const txns=state.user.transactions||[];
+  if (!txns.length) { c.innerHTML='<div style="text-align:center;color:var(--text2);padding:24px;font-size:13px">No transactions yet</div>'; }
+  else c.innerHTML=txns.map(t=>historyItemHTML(t)).join('');
+  openModal('historyModal');
+}
+
+// ── MODALS ──
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg,type='info') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── SAVE ──
+function saveAccounts() {
+  state.accounts = state.accounts.map(a=>a.uid===state.user?.uid?state.user:a);
+  localStorage.setItem('cp_accounts',JSON.stringify(state.accounts));
+}
+
+// ── USER NOTIFICATIONS (from admin) ──
+function loadUserNotifs() {
+  const u=state.user;
+  const notifs=(u.notifications||[]).slice(0,1);
+  if (notifs.length && !notifs[0].read) {
+    const n=notifs[0];
+    // Show toast for latest unread notification
+    setTimeout(()=>showToast(`🔔 ${n.title}`, 'info'), 1500);
+    // Mark as read
+    u.notifications[0].read=true;
+    saveAccounts();
+  }
+}
+
+// ── RELOAD USER DATA (called periodically to sync admin changes) ──
+setInterval(()=>{
+  if (!state.user) return;
+  state.accounts=JSON.parse(localStorage.getItem('cp_accounts')||'[]');
+  const fresh=state.accounts.find(a=>a.uid===state.user.uid);
+  if (fresh) { state.user=fresh; loadApp(); }
+}, 20000);
+
+// ── SESSION CHECK ──
+window.addEventListener('load',()=>{
+  const s=localStorage.getItem('cp_session');
+  if (s) {
+    const sess=JSON.parse(s);
+    if (Date.now()-sess.ts < 3*60*60*1000) {
+      const acc=state.accounts.find(a=>a.uid===sess.uid);
+      if (acc) { state.user=acc; loadApp(); loadWalletUI(); loadUserNotifs(); setTimeout(()=>showPage('appPage'),2200); }
+    }
+  }
+});
+</script>
+</body>
+</html>
